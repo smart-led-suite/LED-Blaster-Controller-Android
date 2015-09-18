@@ -4,7 +4,8 @@
     <string name="hello_world">Hello LED!</string>
     <string name="action_settings">Settings</string>
 
-    <string name="white_desc">White (upstairs): %1$d</string>
+    <string name="white_desc_upstairs">White (upstairs): %1$d</string>
+    <string name="white_desc">White: %1$d</string>
     <string name="red_desc">Red: %1$d</string>
     <string name="green_desc">Green: %1$d</string>
     <string name="blue_desc">Blue: %1$d</string>
@@ -19,7 +20,10 @@
 
     <string name="pref_title_url">LED Blaster fade URL</string>
     <string name="pref_sum_url">HTTP URL to Led Blaster\'s fade.php file</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="pref_title_two_floors">White LEDs are upstairs</string>
+    <string name="pref_sum_two_floors">Tick if the white LED strip is upstairs</string>
+
+    <string name="title_activity_settings">Settings</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

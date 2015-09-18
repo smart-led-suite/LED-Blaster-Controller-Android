@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     SharedPreferences prefs;
 
+    boolean twoFloors;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // change the text for white to add "upstairs" if ticked in the settings
+        twoFloors = prefs.getBoolean("pref_two_floors", false);
+        if(twoFloors) {
+            TextView tv_white = (TextView) findViewById(R.id.tv_white);
+            tv_white.setText(res.getString(R.string.white_desc_upstairs));
+            Log.d(TAG, "twoFloors == true");
+        }
+
 
         // ##### SET ON CLICK LISTENERS #####
         // initialize apply button
@@ -81,6 +92,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sb.setOnSeekBarChangeListener(this);
         onProgressChanged(sb, 0, false);
 }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        twoFloors = prefs.getBoolean("pref_two_floors", false);
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -190,7 +209,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.sb_white:
                 sb_states[0] = progress;
                 // set IDs
-                str_id = R.string.white_desc;
+                if(!twoFloors) {
+                    str_id = R.string.white_desc;
+                } else {
+                    str_id = R.string.white_desc_upstairs;
+                }
                 cb_id = R.id.cb_white;
                 tv_id = R.id.tv_white;
                 break;
@@ -250,8 +273,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "starting network request");
                 String url_http = prefs.getString("pref_url", "").trim(); // remove whitespaces at beginning and end
                 Log.d(TAG, url_http);
-                if(!url_http.endsWith("?"))
+                if(!url_http.endsWith("?")) // add "?" to begin GET if not already existing
                     url_http = url_http.concat("?");
+                if(!url_http.startsWith("http://"))
+                    url_http = "http://".concat(url_http); // add "http://" to the beginning
                 String url_get = String.format(getResources().getString(R.string.url_get), led_vals[0], led_vals[1], led_vals[2], led_vals[3]);
                 Log.d(TAG, url_get);
                 String url_complete = url_http.concat(url_get);

@@ -5,4 +5,10 @@
         android:title="@string/pref_title_url"
         android:summary="@string/pref_sum_url"
         android:inputType="textUri"/>
+
+    <CheckBoxPreference
+        android:key="pref_two_floors"
+        android:title="@string/pref_title_two_floors"
+        android:summary="@string/pref_sum_two_floors"/>
+
 </PreferenceScreen>
