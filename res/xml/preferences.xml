@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <EditTextPreference
-        android:key="pref_url"
-        android:title="@string/pref_title_url"
-        android:summary="@string/pref_sum_url"
-        android:inputType="textUri"/>
+    <PreferenceCategory
+        android:title="@string/prefgroup_network"
+        android:key="prefgroup_network">
+        <EditTextPreference
+            android:key="pref_url"
+            android:title="@string/pref_title_url"
+            android:summary="@string/pref_sum_url"
+            android:inputType="textUri"/>
+    </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/prefgroup_fading"
+        android:key="prefgroup_fading">
+        <EditTextPreference
+            android:key="pref_fadetime"
+            android:inputType="number"
+            android:title="@string/pref_title_fadetime"
+            android:summary="@string/pref_sum_fadetime"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/prefgroup_other"
+        android:key="prefgroup_other">
     <CheckBoxPreference
         android:key="pref_two_floors"
         android:title="@string/pref_title_two_floors"
         android:summary="@string/pref_sum_two_floors"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>

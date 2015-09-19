@@ -12,7 +12,7 @@
 
     <string name="btn_apply">Apply</string>
 
-    <string name="url_get">w=%1$s&amp;r=%2$s&amp;g=%3$s&amp;b=%4$s</string>
+    <string name="url_get">w=%1$s&amp;r=%2$s&amp;g=%3$s&amp;b=%4$s&amp;time=%5$d</string>
 
     <string name="toast_no_network">No network connection!</string>
     <string name="toast_fading_leds">Fading LEDs</string>
@@ -22,9 +22,12 @@
     <string name="pref_sum_url">HTTP URL to Led Blaster\'s fade.php file</string>
     <string name="pref_title_two_floors">White LEDs are upstairs</string>
     <string name="pref_sum_two_floors">Tick if the white LED strip is upstairs</string>
+    <string name="pref_title_fadetime">Fade time</string>
+    <string name="pref_sum_fadetime">Time LED Blaster shall need to complete fading (in ms)</string>
+
+    <string name="prefgroup_network">Network</string>
+    <string name="prefgroup_fading">Fading</string>
+    <string name="prefgroup_other">Other</string>
 
     <string name="title_activity_settings">Settings</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

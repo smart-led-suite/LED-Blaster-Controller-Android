@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SharedPreferences prefs;
 
     boolean twoFloors;
+    int fadetime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
         twoFloors = prefs.getBoolean("pref_two_floors", false);
+        fadetime = Integer.valueOf(prefs.getString("pref_fadetime", "500"));
     }
 
 
@@ -277,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     url_http = url_http.concat("?");
                 if(!url_http.startsWith("http://"))
                     url_http = "http://".concat(url_http); // add "http://" to the beginning
-                String url_get = String.format(getResources().getString(R.string.url_get), led_vals[0], led_vals[1], led_vals[2], led_vals[3]);
+                String url_get = String.format(getResources().getString(R.string.url_get), led_vals[0], led_vals[1], led_vals[2], led_vals[3], fadetime);
                 Log.d(TAG, url_get);
                 String url_complete = url_http.concat(url_get);
                 Log.d(TAG, url_complete);
