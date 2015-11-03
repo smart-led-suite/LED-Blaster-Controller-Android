@@ -166,13 +166,28 @@
 
                     </RelativeLayout>
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_marginTop="10dp" >
+
                         <Button
                             android:id="@+id/btn_apply"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/sb_blue"
                             android:layout_marginTop="15dp"
                             android:text="@string/btn_apply"/>
+
+                        <Button
+                            android:id="@+id/btn_all_off"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_toRightOf="@id/btn_apply"
+                            android:layout_alignTop="@+id/btn_apply"
+                            android:text="@string/btn_all_off"/>
+                    </RelativeLayout>
 
 
 
@@ -208,26 +223,6 @@
                     android:paddingBottom="10dp"/>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/btn_mode1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/btn_mode1"/>
-
-                    <Button
-                        android:id="@+id/btn_mode2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/btn_mode2"/>
-
-                </LinearLayout>
-
-                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -254,12 +249,26 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/btn_stop_fademode"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="@string/btn_stop_fademode"/>
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/btn_mode1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/btn_mode1"/>
+
+                    <Button
+                        android:id="@+id/btn_modes_off"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/btn_modes_off"/>
+
+                </LinearLayout>
+
 
 
             </LinearLayout>

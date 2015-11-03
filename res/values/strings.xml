@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LED Blaster Controller</string>
+    <string name="app_name">LED Blaster</string>
 
     <string name="action_settings">Settings</string>
 
@@ -13,10 +13,9 @@
     <string name="blue_desc">Blue: %1$d</string>
 
     <string name="btn_apply">Apply</string>
-    <string name="btn_mode1">Fade mode 1</string>
-    <string name="btn_mode2">Fade mode 2</string>
-    <string name="btn_stop_fademode">Turn all LEDs off</string>
-
+    <string name="btn_mode1">Start fading</string>
+    <string name="btn_modes_off">Stop fading</string>
+    <string name="btn_all_off">Turn all LEDs off</string>
     <string name="btn_w_ON">ON</string>
     <string name="btn_w_OFF">OFF</string>
 
@@ -42,4 +41,5 @@
     <string name="title_activity_settings">Settings</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+
 </resources>

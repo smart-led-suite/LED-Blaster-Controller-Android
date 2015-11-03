@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LED Blaster Controller</string>
+    <string name="app_name">LED Blaster</string>
     <string name="action_settings">Einstellungen</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="appwidget_text">BEISPIEL</string>
     <string name="blue_desc">Blau: %1$d</string>
     <string name="btn_apply">Schalten</string>
-    <string name="btn_mode1">Fademode 1</string>
-    <string name="btn_mode2">Fademode 2</string>
-    <string name="btn_stop_fademode">Alle LEDs ausschalten</string>
+    <string name="btn_mode1">Starten</string>
+    <string name="btn_all_off">Alle LEDs ausschalten</string>
     <string name="btn_w_OFF">AUS</string>
     <string name="btn_w_ON">AN</string>
     <string name="green_desc">Grün: %1$d</string>
@@ -30,4 +29,6 @@
     <string name="toast_no_network">Keine Netzwerkverbindung!</string>
     <string name="white_desc">Weiß: %1$d</string>
     <string name="white_desc_upstairs">Weiß (oben): %1$d</string>
+    <string name="btn_modes_off">Stoppen</string>
+    <string name="pref_title_url">URL zu LED-Blaster</string>
 </resources>

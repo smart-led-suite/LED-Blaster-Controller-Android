@@ -44,9 +44,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         Context context = getApplicationContext();
         Resources res = getResources();
+
+        Intent intent = new Intent(context, FadeBackgroundService.class);
+
+        intent.putExtra(FadeBackgroundService.EXTRA_ACTION, "OFF");
+        intent.putExtra(FadeBackgroundService.EXTRA_COLOR, "G");
+        startService(intent);
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -79,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // continuous fade buttons
         btn = (Button) findViewById(R.id.btn_mode1);
         btn.setOnClickListener(this);
-        btn = (Button) findViewById(R.id.btn_mode2);
+        btn = (Button) findViewById(R.id.btn_modes_off);
         btn.setOnClickListener(this);
-        btn = (Button) findViewById(R.id.btn_stop_fademode);
+        btn = (Button) findViewById(R.id.btn_all_off);
         btn.setOnClickListener(this);
 
         // increment / decrement buttons for time
@@ -158,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         EditText et;
         int button = 2; // which fademode button is pressed
+        SteadyFadeTask task;
         switch(v.getId()) {
             case R.id.btn_apply: // if the button pressed is the apply button
                 // deactivate the Button while fading...
@@ -201,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.btn_mode1: // button pressed == btn for mode 1
                 button = 1;
-            case R.id.btn_mode2:
+
                 et = (EditText) findViewById(R.id.et_time);
                 int fadetime_continuous = Integer.valueOf(et.getText().toString());
 
@@ -210,10 +216,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
 
                 SetModeTask set_mode_task = new SetModeTask();
-                set_mode_task.execute(button, fadetime_continuous); // start fade mode 1
+                set_mode_task.execute(1, button, fadetime_continuous); // start fade mode 1 ([0]=1 for turning fade mode on
                 break;
-            case R.id.btn_stop_fademode:
-                SteadyFadeTask task = new SteadyFadeTask();
+            case R.id.btn_modes_off:
+                set_mode_task = new SetModeTask();
+                set_mode_task.execute(0); // 2500 is placeholder, not needed
+                break;
+            case R.id.btn_all_off:
+                task = new SteadyFadeTask();
                 task.execute("0", "0", "0", "0");
                 break;
             case R.id.btn_inc_time:
@@ -328,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private class SteadyFadeTask extends AsyncTask<String, Void, Integer> {
         @Override
         protected Integer doInBackground(String... led_vals) {
-            int response = 404;
+            int response = 0;
             try {
                 String url_http = prefs.getString("pref_url", "").trim(); // remove whitespaces at beginning and end
                 String url_get;
@@ -408,8 +418,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(!url_http.startsWith("http://"))
                     url_http = "http://".concat(url_http); // add "http://" to the beginning
 
-                String url_get = String.format(getResources().getString(R.string.url_get_fademode), params[0], params[1]);
+
+                String url_get;
+                if(params[0] != 0) {
+                    url_get = String.format(getResources().getString(R.string.url_get_fademode), params[1], params[2]);
+                } else {
+                    url_get = String.format(getResources().getString(R.string.url_get_fademode), 0, 0);
+                }
                 String url_complete = url_http.concat(url_get);
+
+                Log.d(TAG, url_complete);
 
                 URL url = new URL(url_complete);
 
