@@ -15,10 +15,13 @@
     <string name="btn_apply">Apply</string>
     <string name="btn_mode1">Fade mode 1</string>
     <string name="btn_mode2">Fade mode 2</string>
-    <string name="btn_stop_fademode">Stop continuous fading</string>
+    <string name="btn_stop_fademode">Turn all LEDs off</string>
 
-    <string name="url_get_steady">w=%1$s&amp;r=%2$s&amp;g=%3$s&amp;b=%4$s&amp;time=%5$d</string>
-    <string name="url_get_fademode">mode=%1$d&amp;time=%2$d</string>
+    <string name="btn_w_ON">ON</string>
+    <string name="btn_w_OFF">OFF</string>
+
+    <string name="url_get_steady" translatable="false">w=%1$s&amp;r=%2$s&amp;g=%3$s&amp;b=%4$s&amp;time=%5$d</string>
+    <string name="url_get_fademode" translatable="false">mode=%1$d&amp;time=%2$d</string>
 
     <string name="toast_no_network">No network connection!</string>
     <string name="toast_fading_leds">Fading LEDs</string>

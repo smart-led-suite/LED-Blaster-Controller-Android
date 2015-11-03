@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LED Blaster Controller</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="add_widget">Widget hinzufügen</string>
+    <string name="appwidget_text">BEISPIEL</string>
+    <string name="blue_desc">Blau: %1$d</string>
+    <string name="btn_apply">Schalten</string>
+    <string name="btn_mode1">Fademode 1</string>
+    <string name="btn_mode2">Fademode 2</string>
+    <string name="btn_stop_fademode">Alle LEDs ausschalten</string>
+    <string name="btn_w_OFF">AUS</string>
+    <string name="btn_w_ON">AN</string>
+    <string name="green_desc">Grün: %1$d</string>
+    <string name="heading_continuous_fading">Dauerhaftes Faden</string>
+    <string name="heading_steady_light">Statische Beleuchtung</string>
+    <string name="pref_sum_fadetime">Dauer eines Fades (in ms)</string>
+    <string name="pref_sum_two_floors">Bitte anklicken wenn der weiße LED-Streifen oben ist</string>
+    <string name="pref_sum_url">HTTP-URL zu fade.php des LED-Blasters</string>
+    <string name="pref_title_fadetime">Fadedauer</string>
+    <string name="pref_title_two_floors">Weiße LEDs sind oben</string>
+    <string name="prefgroup_fading">Faden</string>
+    <string name="prefgroup_other">Sonstige</string>
+    <string name="red_desc">Rot: %1$d</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="prefgroup_network">Netzwerk</string>
+    <string name="toast_error_http">Ein Fehler in HTTP ist aufgetreten. Fehlercode: %1$d</string>
+    <string name="toast_fademode_started">Dauerhaftes Faden gestartet</string>
+    <string name="toast_fading_leds">LEDs werden gefadet</string>
+    <string name="toast_no_network">Keine Netzwerkverbindung!</string>
+    <string name="white_desc">Weiß: %1$d</string>
+    <string name="white_desc_upstairs">Weiß (oben): %1$d</string>
+</resources>
