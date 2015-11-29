@@ -14,30 +14,37 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
     final String TAG = "MainActivity";
     private static final int TIME_CHANGE_FACTOR = 50;
 
-    boolean[] cb_states = new boolean[4];
-    int[] sb_states = new int[4];
+    ArrayList<Boolean> cb_states = new ArrayList<>();
+    ArrayList<Integer> sb_states = new ArrayList<>();
 
     SharedPreferences prefs;
+    LEDItemAdapter adapter;
 
     boolean twoFloors;
     int fadetime;
+    private LinearLayout ll_steady_lighting;
+    private int adapterCount;
+    private LEDItem ledItems[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +73,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // change the text for white to add "upstairs" if ticked in the settings
-        twoFloors = prefs.getBoolean("pref_two_floors", false);
-        if(twoFloors) {
-            TextView tv_white = (TextView) findViewById(R.id.tv_white);
-            tv_white.setText(res.getString(R.string.white_desc_upstairs));
-            Log.d(TAG, "twoFloors == true");
-        }
-
-
         // ##### SET ON CLICK LISTENERS #####
         // initialize buttons
         // apply button
@@ -96,27 +94,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         i_btn = (ImageButton) findViewById(R.id.btn_dec_time);
         i_btn.setOnClickListener(this);
 
-        // initialize all CheckBoxes
-        CheckBox cb;
+        adapter = new LEDItemAdapter(this);
 
-        cb = (CheckBox) findViewById(R.id.cb_white);
-        cb.setActivated(true);
+        ll_steady_lighting = (LinearLayout) findViewById(R.id.linear_layout_steady_lighting);
 
-        // initialize all seekbars
-        SeekBar sb;
+        adapterCount = adapter.getCount();
+        ledItems = new LEDItem[adapterCount];
 
-        sb = (SeekBar) findViewById(R.id.sb_white);
-        sb.setOnSeekBarChangeListener(this);
-        onProgressChanged(sb, 0, false);
-        sb = (SeekBar) findViewById(R.id.sb_red);
-        sb.setOnSeekBarChangeListener(this);
-        onProgressChanged(sb, 0, false);
-        sb = (SeekBar) findViewById(R.id.sb_green);
-        sb.setOnSeekBarChangeListener(this);
-        onProgressChanged(sb, 0, false);
-        sb = (SeekBar) findViewById(R.id.sb_blue);
-        sb.setOnSeekBarChangeListener(this);
-        onProgressChanged(sb, 0, false);
+        for(int position = 0; position < adapterCount; position++) {
+            View item = adapter.getView(position, null, null);
+
+            ledItems[position] = (LEDItem) adapter.getItem(position);
+
+            // initialize slider
+            SeekBar sb = (SeekBar) item.findViewById(R.id.sb_value);
+            sb.setOnSeekBarChangeListener(this);
+
+            item.setId(position);
+
+            // initialize checkbox
+            CheckBox cb = (CheckBox) item.findViewById(R.id.cb_change);
+            cb.setActivated(true);
+
+            // add to Linear Layout view
+            ll_steady_lighting.addView(item, position + 1);
+            ll_steady_lighting.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        }
 
 
 
@@ -164,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         EditText et;
         int button = 2; // which fademode button is pressed
         SteadyFadeTask task;
+        LEDTarget targets[] = new LEDTarget[adapterCount];
         switch(v.getId()) {
             case R.id.btn_apply: // if the button pressed is the apply button
                 // deactivate the Button while fading...
@@ -171,20 +175,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 btn.setActivated(false);
 
                 CheckBox cb; // var for the checkboxes i have to check in a second
-
-                // set the val to -1 if checkbox is NOT checked
-                cb = (CheckBox) findViewById(R.id.cb_white);
-                if(!cb.isChecked())
-                    sb_states[0] = -1;
-                cb = (CheckBox) findViewById(R.id.cb_red);
-                if(!cb.isChecked())
-                    sb_states[1] = -1;
-                cb = (CheckBox) findViewById(R.id.cb_green);
-                if(!cb.isChecked())
-                    sb_states[2] = -1;
-                cb = (CheckBox) findViewById(R.id.cb_blue);
-                if(!cb.isChecked())
-                    sb_states[3] = -1;
+                SeekBar sb;
+                // read value from all checkboxes
+                for(int item = 0; item < adapterCount; item++) {
+                    ViewGroup itemLayout = (ViewGroup) ll_steady_lighting.getChildAt(item + 1);
+                    cb = (CheckBox) itemLayout.findViewById(R.id.cb_change);
+                    sb = (SeekBar) itemLayout.findViewById(R.id.sb_value);
+                    if(cb.isChecked()) { // if checked, set to the value of the slider
+                        sb_states.add(sb.getProgress());
+                    } else {
+                        sb_states.add(-1);
+                    }
+                }
 
                 Log.d(TAG, "LED_states:");
                 for(int val : sb_states) {
@@ -192,15 +194,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 SteadyFadeTask fade_task = new SteadyFadeTask();
-                fade_task.execute(String.valueOf(sb_states[0]), String.valueOf(sb_states[1]), String.valueOf(sb_states[2]), String.valueOf(sb_states[3]));
 
-                try {
-                    Log.d(TAG, String.valueOf(fade_task.get()));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+
+
+                for(int item = 0; item < adapterCount; item++) {
+                    targets[item] = new LEDTarget(ledItems[item].getShortName(), sb_states.get(item));
                 }
+                fade_task.execute(targets);
+
+//                try {
+//                    Log.d(TAG, String.valueOf(fade_task.get()));
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }
 
                 resetUI();
                 break;
@@ -224,7 +232,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_all_off:
                 task = new SteadyFadeTask();
-                task.execute("0", "0", "0", "0");
+                for(int item = 0; item < adapterCount; item++) {
+                    targets[item] = new LEDTarget(ledItems[item].getShortName(), 0);
+                }
+                task.execute(targets);
                 break;
             case R.id.btn_inc_time:
                 et = (EditText) findViewById(R.id.et_time);
@@ -240,89 +251,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void resetUI() {
-        sb_states = new int[4]; // reset sb_states to have all 0s
+        sb_states = new ArrayList<>(); // reset sb_states to have all 0s
 
-        // reset seekbars before checkboxes, as the seekbar Listener checks the boxes
-        SeekBar sb;
-        sb = (SeekBar) findViewById(R.id.sb_white);
-        sb.setProgress(0);
-        sb = (SeekBar) findViewById(R.id.sb_red);
-        sb.setProgress(0);
-        sb = (SeekBar) findViewById(R.id.sb_green);
-        sb.setProgress(0);
-        sb = (SeekBar) findViewById(R.id.sb_blue);
-        sb.setProgress(0);
+        for(int item = 0; item < adapterCount; item++) {
+            ViewGroup itemLayout = (ViewGroup) ll_steady_lighting.getChildAt(item + 1);
+            // reset seekbar
+            SeekBar sb = (SeekBar) itemLayout.findViewById(R.id.sb_value);
+            sb.setProgress(0);
+            // reset checkbox
+            CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.cb_change);
+            cb.setChecked(false);
+        }
 
-        // Reset all Checkboxes
-        CheckBox cb;
-        cb = (CheckBox) findViewById(R.id.cb_white);
-        cb.setChecked(false);
-        cb = (CheckBox) findViewById(R.id.cb_red);
-        cb.setChecked(false);
-        cb = (CheckBox) findViewById(R.id.cb_green);
-        cb.setChecked(false);
-        cb = (CheckBox) findViewById(R.id.cb_blue);
-        cb.setChecked(false);
+
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        Log.v(TAG, "seekbar changed");
+        Log.v(TAG, "seekbar changed: " + progress + " sb: " + ((RelativeLayout) seekBar.getParent()).getId());
+        ViewGroup parent = (ViewGroup) seekBar.getParent();
+        int id = parent.getId();
+        LEDItem ledItem = (LEDItem) adapter.getItem(id);
+        String shortName = ledItem.getShortName();
 
-        int str_id = 0; // string id
-        int tv_id = 0; // textview id
-        int cb_id = 0; // checkbox id
+        TextView tv = (TextView) parent.findViewById(R.id.tv_name);
+        CheckBox cb = (CheckBox) parent.findViewById(R.id.cb_change);
 
-        TextView tv;
-        CheckBox cb;
-        switch(seekBar.getId()) {
-            case R.id.sb_white:
-                sb_states[0] = progress;
-                // set IDs
-                if(!twoFloors) {
-                    str_id = R.string.white_desc;
-                } else {
-                    str_id = R.string.white_desc_upstairs;
-                }
-                cb_id = R.id.cb_white;
-                tv_id = R.id.tv_white;
-                break;
-            case R.id.sb_red:
-                sb_states[1] = progress;
-                // set IDs
-                str_id = R.string.red_desc;
-                cb_id = R.id.cb_red;
-                tv_id = R.id.tv_red;
-                break;
-            case R.id.sb_green:
-                sb_states[2] = progress;
-                // set IDs
-                str_id = R.string.green_desc;
-                cb_id = R.id.cb_green;
-                tv_id = R.id.tv_green;
-                break;
-            case R.id.sb_blue:
-                sb_states[3] = progress;
-                // set IDs
-                str_id = R.string.blue_desc;
-                cb_id = R.id.cb_blue;
-                tv_id = R.id.tv_blue;
-                break;
-            default:
-                return; // if none of the checkboxes -> abort
-        }
         // update text
-        String text = String.format(getResources().getString(str_id), progress);
-        tv = (TextView) findViewById(tv_id);
+        String text = String.format(getResources().getString(R.string.tv_name), ledItem.getName(), progress);
         tv.setText(text);
 
         // check checkbox if input is coming from user
         if(fromUser) {
-            cb = (CheckBox) findViewById(cb_id);
             cb.setChecked(true);
         }
 
-        Log.v(TAG, String.valueOf(sb_states[1]));
+        //Log.v(TAG, String.valueOf(sb_states.get(1)));
     }
 
     @Override
@@ -335,9 +299,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private class SteadyFadeTask extends AsyncTask<String, Void, Integer> {
+    private class SteadyFadeTask extends AsyncTask<LEDTarget,Void,Integer> {
         @Override
-        protected Integer doInBackground(String... led_vals) {
+        protected Integer doInBackground(LEDTarget... params) {
             int response = 0;
             try {
                 String url_http = prefs.getString("pref_url", "").trim(); // remove whitespaces at beginning and end
@@ -355,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // TURN MODE 0 ON
                 url_get = String.format(getResources().getString(R.string.url_get_fademode), 0, 1); // set to mode 0 in 1 ms
                 url_complete = url_http.concat(url_get);
-                Log.d(TAG, url_complete);
+//                Log.d(TAG, url_complete);
                 url = new URL(url_complete);
                 // send request
                 con = (HttpURLConnection) url.openConnection();
@@ -365,9 +329,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 response = con.getResponseCode();
                 Log.d(TAG, "Response code: " + response);
 
+                url_get = "time=" + fadetime;
+
                 // FADE LEDs
                 // prepare network request
-                url_get = String.format(getResources().getString(R.string.url_get_steady), led_vals[0], led_vals[1], led_vals[2], led_vals[3], fadetime);
+                //url_get = String.format(getResources().getString(R.string.url_get_steady), led_vals[0], led_vals[1], led_vals[2], led_vals[3], fadetime);
+                for(LEDTarget target : params) {
+                    url_get = url_get.concat(String.format("&%s=%d", target.getShortName(), target.getTargetValue()));
+                }
+//                if(url_get.endsWith("&")) {
+//                    url_get = url_get.substring(url_get.lastIndexOf("&"), url_get.length());
+//                }
+                Log.d(TAG, url_get);
                 url_complete = url_http.concat(url_get);
 
                 Log.d(TAG, url_complete);
