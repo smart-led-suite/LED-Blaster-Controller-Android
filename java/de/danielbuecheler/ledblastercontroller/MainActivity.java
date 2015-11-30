@@ -316,18 +316,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(!url_http.startsWith("http://"))
                     url_http = "http://".concat(url_http); // add "http://" to the beginning
 
-                // TURN MODE 0 ON
-                url_get = String.format(getResources().getString(R.string.url_get_fademode), 0, 1); // set to mode 0 in 1 ms
-                url_complete = url_http.concat(url_get);
-//                Log.d(TAG, url_complete);
-                url = new URL(url_complete);
-                // send request
-                con = (HttpURLConnection) url.openConnection();
-                con.setReadTimeout(10000 /* millis */);
-                con.setConnectTimeout(15000 /* millis */);
-                con.connect();
-                response = con.getResponseCode();
-                Log.d(TAG, "Response code: " + response);
+//                // TURN MODE 0 ON
+//                url_get = String.format(getResources().getString(R.string.url_get_fademode), 0, 1); // set to mode 0 in 1 ms
+//                url_complete = url_http.concat(url_get);
+////                Log.d(TAG, url_complete);
+//                url = new URL(url_complete);
+//                // send request
+//                con = (HttpURLConnection) url.openConnection();
+//                con.setReadTimeout(10000 /* millis */);
+//                con.setConnectTimeout(15000 /* millis */);
+//                con.connect();
+//                response = con.getResponseCode();
+//                Log.d(TAG, "Response code: " + response);
 
                 url_get = "time=" + fadetime;
 
