@@ -20,13 +20,4 @@
             android:summary="@string/pref_sum_fadetime"/>
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/prefgroup_other"
-        android:key="prefgroup_other">
-    <CheckBoxPreference
-        android:key="pref_two_floors"
-        android:title="@string/pref_title_two_floors"
-        android:summary="@string/pref_sum_two_floors"/>
-    </PreferenceCategory>
-
 </PreferenceScreen>
