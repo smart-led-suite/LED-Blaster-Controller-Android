@@ -10,17 +10,17 @@
 
         <android.support.v7.widget.CardView
             android:id="@+id/cardview_1"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_margin="8dp"
+            android:layout_margin="5dp"
             android:layout_marginBottom="0dp"
             card_view:cardCornerRadius="4dp"
-            card_view:cardElevation="5dp">
+            card_view:cardElevation="2dp">
 
             <LinearLayout
                 android:id="@+id/linear_layout_steady_lighting"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
@@ -38,37 +38,26 @@
                     android:textStyle="bold"
                     android:paddingBottom="10dp"/>
 
-                <ListView
-                    android:id="@+id/lv_led_items"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    >
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp" >
 
-                </ListView>
+                    <Button
+                        android:id="@+id/btn_apply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="@string/btn_apply"/>
 
-                    <RelativeLayout
+                    <Button
+                        android:id="@+id/btn_all_off"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:layout_marginTop="10dp" >
-
-                        <Button
-                            android:id="@+id/btn_apply"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="15dp"
-                            android:text="@string/btn_apply"/>
-
-                        <Button
-                            android:id="@+id/btn_all_off"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_toRightOf="@id/btn_apply"
-                            android:layout_alignTop="@+id/btn_apply"
-                            android:text="@string/btn_all_off"/>
-                    </RelativeLayout>
+                        android:layout_toRightOf="@id/btn_apply"
+                        android:layout_alignTop="@+id/btn_apply"
+                        android:text="@string/btn_all_off"/>
+                </RelativeLayout>
 
 
 
@@ -80,10 +69,10 @@
             android:id="@+id/cardview_2"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_margin="8dp"
+            android:layout_margin="5dp"
             android:layout_marginBottom="0dp"
             card_view:cardCornerRadius="4dp"
-            card_view:cardElevation="5dp">
+            card_view:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
