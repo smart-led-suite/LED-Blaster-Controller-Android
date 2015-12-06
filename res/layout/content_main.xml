@@ -5,13 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:showIn="@layout/activity_main"
-    tools:context="de.danielbuecheler.ledblastercontroller.MainFragment">
+    tools:context="de.danielbuecheler.ledblastercontroller.SteadyLightingFragment">
 
     <fragment
-        android:id="@+id/fragment_main"
-        android:layout_width="wrap_content"
+        android:id="@+id/steady_lighting_fragment"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:name="de.danielbuecheler.ledblastercontroller.MainFragment"
-        tools:layout="@layout/fragment_main" />
+        android:layout_margin="@dimen/card_default_margin"
+        android:name="de.danielbuecheler.ledblastercontroller.SteadyLightingFragment"
+        tools:layout="@layout/fragment_steady_lighting" />
+
+    <fragment
+        android:id="@+id/fade_modes_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/card_default_margin"
+        android:name="de.danielbuecheler.ledblastercontroller.FadeModesFragment"
+        tools:layout="@layout/fragment_fade_modes" />
 
 </LinearLayout>

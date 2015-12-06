@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:showIn="@layout/activity_main"
+    tools:context="de.danielbuecheler.ledblastercontroller.SteadyLightingFragment">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent" >
+        <fragment
+            android:id="@+id/steady_lighting_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/card_default_margin"
+            android:name="de.danielbuecheler.ledblastercontroller.SteadyLightingFragment"
+            tools:layout="@layout/fragment_steady_lighting" />
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+        <fragment
+            android:id="@+id/fade_modes_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/card_default_margin"
+            android:name="de.danielbuecheler.ledblastercontroller.FadeModesFragment"
+            tools:layout="@layout/fragment_fade_modes" />
+    </ScrollView>
+
+</LinearLayout>
