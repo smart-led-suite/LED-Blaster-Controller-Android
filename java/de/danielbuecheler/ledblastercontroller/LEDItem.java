@@ -5,20 +5,22 @@ public class LEDItem {
     private String shortName;
     private String description;
 
-    private int color;
+    private String colorHex;
+    private String colorHexFont;
 
-    public LEDItem(String shortName, String name, int color) {
+    public LEDItem(String shortName, String name, String colorHex, String colorHexFont) {
         this.name = name;
         this.shortName = shortName;
-        this.color = color;
+        this.colorHex = colorHex;
+        this.colorHexFont = colorHexFont;
     }
 
-    public LEDItem(String shortName, String name, String description, int color) {
+    public LEDItem(String shortName, String name, String description, String colorHex, String colorHexFont) {
         this.name = name;
         this.shortName = shortName;
         this.description = description;
-        this.color = color;
-
+        this.colorHex = colorHex;
+        this.colorHexFont = colorHexFont;
     }
 
     public String getName() {
@@ -33,7 +35,11 @@ public class LEDItem {
         return description;
     }
 
-    public int getColor() {
-        return color;
+    public String getColorHex() {
+        return colorHex;
+    }
+
+    public String getColorFontHex() {
+        return colorHexFont;
     }
 }

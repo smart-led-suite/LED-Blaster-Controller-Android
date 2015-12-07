@@ -12,18 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <CheckBox
-        android:id="@+id/cb_change"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_name"
-        android:padding="5dp"/>
-
     <SeekBar
         android:id="@+id/sb_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/cb_change"
         android:layout_below="@id/tv_name"
         android:max="1000"
         android:layout_centerVertical="true"/>

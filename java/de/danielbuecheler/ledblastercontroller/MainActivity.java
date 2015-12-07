@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+        } else if(id == R.id.action_refresh) {
+            SteadyLightingFragment frag = (SteadyLightingFragment) getFragmentManager().findFragmentById(R.id.steady_lighting_fragment);
+            frag.updateSeekBars();
         }
 
         return super.onOptionsItemSelected(item);

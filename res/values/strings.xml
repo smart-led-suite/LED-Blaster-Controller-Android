@@ -2,6 +2,7 @@
     <string name="app_name">LED Blaster</string>
 
     <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh LED brightnesses</string>
 
     <string name="heading_steady_light">Steady lighting</string>
     <string name="heading_continuous_fading">Continuous fade modes</string>
@@ -28,6 +29,10 @@
 
     <string name="pref_title_url">LED Blaster fade URL</string>
     <string name="pref_sum_url">HTTP URL to Led Blaster\'s fade.php file</string>
+    <string name="pref_title_setup_url">LED Blaster colors file</string>
+    <string name="pref_sum_setup_url">HTTP URL to Led Blaster\'s colors.csv file</string>
+    <string name="pref_title_brightness_url">LED Blaster current brightness file</string>
+    <string name="pref_sum_brightness_url">HTTP URL to Led Blaster\'s example.csv file</string>
     <string name="pref_title_two_floors">White LEDs are upstairs</string>
     <string name="pref_sum_two_floors">Tick if the white LED strip is upstairs</string>
     <string name="pref_title_fadetime">Fade time</string>

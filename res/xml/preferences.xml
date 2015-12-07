@@ -8,6 +8,18 @@
             android:title="@string/pref_title_url"
             android:summary="@string/pref_sum_url"
             android:inputType="textUri"/>
+
+        <EditTextPreference
+            android:key="pref_setup_url"
+            android:title="@string/pref_title_setup_url"
+            android:summary="@string/pref_sum_setup_url"
+            android:inputType="textUri"/>
+
+        <EditTextPreference
+            android:key="pref_brightness_url"
+            android:title="@string/pref_title_brightness_url"
+            android:summary="@string/pref_sum_brightness_url"
+            android:inputType="textUri"/>
     </PreferenceCategory>
 
     <PreferenceCategory

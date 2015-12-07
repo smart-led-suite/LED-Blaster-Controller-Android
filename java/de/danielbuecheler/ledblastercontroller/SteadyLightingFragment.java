@@ -24,15 +24,23 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class SteadyLightingFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
     final String TAG = "SteadyLightingFragment";
 
-//    ArrayList<Boolean> cb_states = new ArrayList<>();
     ArrayList<Integer> sb_states = new ArrayList<>();
+
+    HashMap<String, Integer> codeToNumber;
 
     SharedPreferences prefs;
     LEDItemAdapter adapter;
@@ -46,8 +54,6 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -87,11 +93,14 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
 
         adapterCount = adapter.getCount();
         ledItems = new LEDItem[adapterCount];
+        codeToNumber = new HashMap<>();
 
         for(int position = 0; position < adapterCount; position++) {
             View item = adapter.getView(position, null, null);
 
             ledItems[position] = (LEDItem) adapter.getItem(position);
+
+            codeToNumber.put(ledItems[position].getShortName(), position);
 
             // initialize slider
             SeekBar sb = (SeekBar) item.findViewById(R.id.sb_value);
@@ -99,14 +108,12 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
 
             item.setId(position);
 
-            // initialize checkbox
-            CheckBox cb = (CheckBox) item.findViewById(R.id.cb_change);
-            cb.setActivated(true);
-
             // add to Linear Layout view
             ll_steady_lighting.addView(item, position + 1);
             ll_steady_lighting.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         }
+
+
 
         return returnView;
     }
@@ -118,24 +125,34 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
         twoFloors = prefs.getBoolean("pref_two_floors", false);
 
         fadetime = Integer.valueOf(prefs.getString("pref_fadetime", "500"));
+        updateSeekBars();
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            Intent intent = new Intent(this.getView(), SettingsActivity.class);
-//            startActivity(intent);
-//        }
-//        Log.d(TAG, "optionsItemSelected");
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    public void updateSeekBars() {
+        Log.d(TAG, "started updating..");
+        String url_current_brightnesses = prefs.getString("pref_brightness_url", "").trim();
+        Log.d(TAG, url_current_brightnesses);
+        String reply = "";
+        try {
+            reply = new DownloadWebpageTask().execute(url_current_brightnesses).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        // process csv
+        String[] tupels = reply.split("\n");
+        for(int i = 0; i < tupels.length; i++) {
+            String[] data = tupels[i].split(";");
+            if(data.length != 2) // break if data doesn't fit our scheme
+                break;
+            Log.d(TAG, "updating sb");
+            int numberOfLEDItem = codeToNumber.get(data[0]);
+            SeekBar sb = (SeekBar) ll_steady_lighting.getChildAt(numberOfLEDItem + 1).findViewById(R.id.sb_value);
+            sb.setProgress(Integer.parseInt(data[1]));
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -154,13 +171,8 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                 // read value from all checkboxes
                 for(int item = 0; item < adapterCount; item++) {
                     ViewGroup itemLayout = (ViewGroup) ll_steady_lighting.getChildAt(item + 1);
-                    cb = (CheckBox) itemLayout.findViewById(R.id.cb_change);
                     sb = (SeekBar) itemLayout.findViewById(R.id.sb_value);
-                    if(cb.isChecked()) { // if checked, set to the value of the slider
-                        sb_states.add(sb.getProgress());
-                    } else {
-                        sb_states.add(-1);
-                    }
+                    sb_states.add(sb.getProgress());
                 }
 
                 Log.d(TAG, "LED_states:");
@@ -177,15 +189,7 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                 }
                 fade_task.execute(targets);
 
-//                try {
-//                    Log.d(TAG, String.valueOf(fade_task.get()));
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                } catch (ExecutionException e) {
-//                    e.printStackTrace();
-//                }
-
-                resetUI();
+//                updateSeekBars();
                 break;
 
 
@@ -200,22 +204,6 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
         }
     }
 
-    private void resetUI() {
-        sb_states = new ArrayList<>(); // reset sb_states to have all 0s
-
-        for(int item = 0; item < adapterCount; item++) {
-            ViewGroup itemLayout = (ViewGroup) ll_steady_lighting.getChildAt(item + 1);
-            // reset seekbar
-            SeekBar sb = (SeekBar) itemLayout.findViewById(R.id.sb_value);
-            sb.setProgress(0);
-            // reset checkbox
-            CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.cb_change);
-            cb.setChecked(false);
-        }
-
-
-    }
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         Log.v(TAG, "seekbar changed: " + progress + " sb: " + ((RelativeLayout) seekBar.getParent()).getId());
@@ -225,18 +213,10 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
         String shortName = ledItem.getShortName();
 
         TextView tv = (TextView) parent.findViewById(R.id.tv_name);
-        CheckBox cb = (CheckBox) parent.findViewById(R.id.cb_change);
 
         // update text
         String text = String.format(getResources().getString(R.string.tv_name), ledItem.getName(), progress);
         tv.setText(text);
-
-        // check checkbox if input is coming from user
-        if(fromUser) {
-            cb.setChecked(true);
-        }
-
-        //Log.v(TAG, String.valueOf(sb_states.get(1)));
     }
 
     @Override
@@ -321,10 +301,81 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                 Toast toast = Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_LONG); // show toast that an error occured, including error / status code
                 toast.show();
             }
-
+//            // sleep for 1 second to ensure led-blaster has written to file
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             // reactivate button
             getView().findViewById(R.id.btn_apply).setActivated(true);
 
+        }
+    }
+
+    public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
+        Reader reader = null;
+        reader = new InputStreamReader(stream, "UTF-8");
+        char[] buffer = new char[len];
+        reader.read(buffer);
+        return new String(buffer);
+    }
+
+    // Given a URL, establishes an HttpUrlConnection and retrieves
+// the web page content as a InputStream, which it returns as
+// a string.
+    private String downloadUrl(String myurl) throws IOException {
+        InputStream is = null;
+        // Only display the first 500 characters of the retrieved
+        // web page content.
+        int len = 500;
+
+        try {
+            URL url = new URL(myurl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(10000 /* milliseconds */);
+            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            // Starts the query
+            conn.connect();
+            int response = conn.getResponseCode();
+            Log.d(TAG, "The response is: " + response);
+            is = conn.getInputStream();
+
+            // Convert the InputStream into a string
+            String contentAsString = readIt(is, len);
+
+            return contentAsString;
+
+            // Makes sure that the InputStream is closed after the app is
+            // finished using it.
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+    }
+
+    // Uses AsyncTask to create a task away from the main UI thread. This task takes a
+    // URL string and uses it to create an HttpUrlConnection. Once the connection
+    // has been established, the AsyncTask downloads the contents of the webpage as
+    // an InputStream. Finally, the InputStream is converted into a string, which is
+    // displayed in the UI by the AsyncTask's onPostExecute method.
+    private class DownloadWebpageTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+
+            // params comes from the execute() call: params[0] is the url.
+            try {
+                return downloadUrl(urls[0]);
+            } catch (IOException e) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
         }
     }
 }
