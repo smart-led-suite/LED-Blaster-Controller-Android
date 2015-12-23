@@ -125,10 +125,24 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
         twoFloors = prefs.getBoolean("pref_two_floors", false);
 
         fadetime = Integer.valueOf(prefs.getString("pref_fadetime", "500"));
-        updateSeekBars();
+        try {
+            updateSeekBars();
+        } catch(NullPointerException e) {
+            Log.e(TAG, "toasting");
+
+            Toast.makeText(getActivity().getApplicationContext(), R.string.toast_error_parsing, Toast.LENGTH_LONG).show();
+        }
     }
 
-    public void updateSeekBars() {
+    public void resetSeekBars() {
+        for(int i = 0; i < ledItems.length; i++) {
+            Log.d(TAG, "updating sb");
+            SeekBar sb = (SeekBar) ll_steady_lighting.getChildAt(i + 1).findViewById(R.id.sb_value);
+            sb.setProgress(0);
+        }
+    }
+
+    public void updateSeekBars() throws NullPointerException {
         Log.d(TAG, "started updating..");
         String url_current_brightnesses = prefs.getString("pref_brightness_url", "").trim();
         Log.d(TAG, url_current_brightnesses);
@@ -175,7 +189,7 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                     sb_states.add(sb.getProgress());
                 }
 
-                Log.d(TAG, "LED_states:");
+                Log.d(TAG, "LED_states:" + sb_states);
                 for(int val : sb_states) {
                     Log.d(TAG, String.valueOf(val));
                 }
@@ -190,6 +204,8 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                 fade_task.execute(targets);
 
 //                updateSeekBars();
+                // reset sb states
+                sb_states = new ArrayList<>();
                 break;
 
 
@@ -199,6 +215,9 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                     targets[item] = new LEDTarget(ledItems[item].getShortName(), 0);
                 }
                 task.execute(targets);
+                
+                resetSeekBars(); // set all sb to zero
+//                updateSeekBars();
                 break;
 
         }

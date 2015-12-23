@@ -2,8 +2,6 @@
 <resources>
     <string name="app_name">LED Blaster</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="add_widget">Widget hinzufügen</string>
-    <string name="appwidget_text">BEISPIEL</string>
     <string name="blue_desc">Blau: %1$d</string>
     <string name="btn_apply">Schalten</string>
     <string name="btn_mode1">Starten</string>
@@ -26,9 +24,13 @@
     <string name="toast_error_http">Ein Fehler in HTTP ist aufgetreten. Fehlercode: %1$d</string>
     <string name="toast_fademode_started">Dauerhaftes Faden gestartet</string>
     <string name="toast_fading_leds">LEDs werden gefadet</string>
-    <string name="toast_no_network">Keine Netzwerkverbindung!</string>
-    <string name="white_desc">Weiß: %1$d</string>
-    <string name="white_desc_upstairs">Weiß (oben): %1$d</string>
+    <string name="toast_no_network">Keine Netzwerkverbindung!</string>tg
     <string name="btn_modes_off">Stoppen</string>
     <string name="pref_title_url">URL zu LED-Blaster</string>
+    <string name="action_refresh">LED-Helligkeiten aktualisieren</string>
+    <string name="pref_sum_brightness_url">HTTP-URL zu example.csv des LED-Blasters</string>
+    <string name="pref_sum_setup_url">HTTP-URL zu colors.csv des LED-Blasters</string>
+    <string name="pref_title_brightness_url">LED_Blaster Helligkeiten-Datei</string>
+    <string name="pref_title_setup_url">LED-Blaster Farben-Datei</string>
+    <string name="toast_error_parsing">Ein Fehler ist beim Lesen der LED-Helligkeiten aufgetreten</string>
 </resources>
