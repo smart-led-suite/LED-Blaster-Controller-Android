@@ -17,6 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_name"
-        android:max="100"
+        android:max="1000"
         android:layout_centerVertical="true"/>
 </RelativeLayout>
