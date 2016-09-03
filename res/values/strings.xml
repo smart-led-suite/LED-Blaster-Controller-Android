@@ -23,11 +23,16 @@
     <string name="url_get_fademode" translatable="false">mode=%1$d&amp;time=%2$d</string>
 
     <string name="toast_no_network">No network connection!</string>
+    <string name="toast_no_led_data">No LED data saved, trying to update from network...</string>
+    <string name="toast_updating_leds">Updating LEDs from network...</string>
+    <string name="toast_not_home_network">You are not connected to your home network, led-blaster may not work as expected</string>
     <string name="toast_fading_leds">Fading LEDs</string>
     <string name="toast_fademode_started">Continuous fading started</string>
     <string name="toast_error_http">An HTTP error occurred. Error code: %1$d</string>
     <string name="toast_error_parsing">An error occurred reading the brightness</string>
 
+    <string name="pref_title_home_network">Home Network</string>
+    <string name="pref_sum_home_network">SSID of the WiFi network in which led-blaster is accessible</string>
     <string name="pref_title_url">LED Blaster fade URL</string>
     <string name="pref_sum_url">HTTP URL to Led Blaster\'s fade.php file</string>
     <string name="pref_title_setup_url">LED Blaster colors file</string>

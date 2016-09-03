@@ -1,6 +1,8 @@
 package de.danielbuecheler.ledblastercontroller;
 
-public class LEDItem {
+import java.io.Serializable;
+
+public class LEDItem implements Serializable {
     private String name;
     private String shortName;
     private String description;
@@ -42,4 +44,6 @@ public class LEDItem {
     public String getColorFontHex() {
         return colorHexFont;
     }
+
+
 }

@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -51,6 +53,8 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
     private int adapterCount;
     private LEDItem ledItems[];
 
+    boolean inHomeNetwork = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,10 +66,15 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
         Context context = getActivity().getApplicationContext();
         Resources res = getResources();
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
         View returnView = inflater.inflate(R.layout.fragment_steady_lighting, container, false);
 
         ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+        String homeSSID = prefs.getString("pref_home_network", "");
 
         // Check for network connection, if not connected show toast
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -76,7 +85,15 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
             toast.show();
         }
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        // check if we are in home wifi
+        String actualSSID = wifiInfo.getSSID();
+        inHomeNetwork = actualSSID.equals("\"" + homeSSID + "\""); // getSSID delivers it with quotation marks
+        Log.d(TAG, "in home network: " + inHomeNetwork);
+
+
+
+
+
 
         // ##### SET ON CLICK LISTENERS #####
         // initialize buttons
@@ -87,14 +104,26 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
         btn = (Button) returnView.findViewById(R.id.btn_all_off);
         btn.setOnClickListener(this);
 
+
+
         adapter = new LEDItemAdapter(this.getActivity());
 
         ll_steady_lighting = (LinearLayout) returnView.findViewById(R.id.linear_layout_steady_lighting);
 
         adapterCount = adapter.getCount();
+        if(adapterCount <= 0) {
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, res.getText(R.string.toast_no_led_data), duration);
+            toast.show();
+            adapter.update(this.getActivity());
+            adapterCount = adapter.getCount();
+        }
         ledItems = new LEDItem[adapterCount];
         codeToNumber = new HashMap<>();
 
+
+        // initialize each LED
         for(int position = 0; position < adapterCount; position++) {
             View item = adapter.getView(position, null, null);
 
@@ -113,7 +142,19 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
             ll_steady_lighting.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         }
 
+        Log.v(TAG, "finished creating");
 
+        // update LEDs if in home network
+        if(inHomeNetwork) {
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, res.getText(R.string.toast_updating_leds), duration);
+            toast.show();
+            adapter.update(this.getActivity());
+        } else { // show warning if not in home network
+            Toast toast = Toast.makeText(context, res.getText(R.string.toast_not_home_network), Toast.LENGTH_LONG);
+            toast.show();
+        }
 
         return returnView;
     }
@@ -126,7 +167,9 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
 
         fadetime = Integer.valueOf(prefs.getString("pref_fadetime", "500"));
         try {
-            updateSeekBars();
+            if(inHomeNetwork) {
+                updateSeekBars();
+            }
         } catch(NullPointerException e) {
             Log.e(TAG, "toasting");
 
@@ -136,16 +179,16 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
 
     public void resetSeekBars() {
         for(int i = 0; i < ledItems.length; i++) {
-            Log.d(TAG, "updating sb");
+            Log.v(TAG, "updating sb");
             SeekBar sb = (SeekBar) ll_steady_lighting.getChildAt(i + 1).findViewById(R.id.sb_value);
             sb.setProgress(0);
         }
     }
 
     public void updateSeekBars() throws NullPointerException {
-        Log.d(TAG, "started updating..");
+        Log.v(TAG, "started updating..");
         String url_current_brightnesses = prefs.getString("pref_brightness_url", "").trim();
-        Log.d(TAG, url_current_brightnesses);
+        Log.v(TAG, url_current_brightnesses);
         String reply = "";
         try {
             reply = new DownloadWebpageTask().execute(url_current_brightnesses).get();
@@ -161,7 +204,7 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
             String[] data = tupels[i].split(";");
             if(data.length != 2) // break if data doesn't fit our scheme
                 break;
-            Log.d(TAG, "updating sb");
+            Log.v(TAG, "updating sb");
             int numberOfLEDItem = codeToNumber.get(data[0]);
             SeekBar sb = (SeekBar) ll_steady_lighting.getChildAt(numberOfLEDItem + 1).findViewById(R.id.sb_value);
             sb.setProgress(Integer.parseInt(data[1]));
@@ -189,9 +232,9 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                     sb_states.add(sb.getProgress());
                 }
 
-                Log.d(TAG, "LED_states:" + sb_states);
+                Log.v(TAG, "LED_states:" + sb_states);
                 for(int val : sb_states) {
-                    Log.d(TAG, String.valueOf(val));
+                    Log.v(TAG, String.valueOf(val));
                 }
 
                 SteadyFadeTask fade_task = new SteadyFadeTask();
@@ -268,7 +311,7 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
 //                // TURN MODE 0 ON
 //                url_get = String.format(getResources().getString(R.string.url_get_fademode), 0, 1); // set to mode 0 in 1 ms
 //                url_complete = url_http.concat(url_get);
-////                Log.d(TAG, url_complete);
+////                Log.v(TAG, url_complete);
 //                url = new URL(url_complete);
 //                // send request
 //                con = (HttpURLConnection) url.openConnection();
@@ -276,7 +319,7 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
 //                con.setConnectTimeout(15000 /* millis */);
 //                con.connect();
 //                response = con.getResponseCode();
-//                Log.d(TAG, "Response code: " + response);
+//                Log.v(TAG, "Response code: " + response);
 
                 url_get = "time=" + fadetime;
 
@@ -289,10 +332,10 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
 //                if(url_get.endsWith("&")) {
 //                    url_get = url_get.substring(url_get.lastIndexOf("&"), url_get.length());
 //                }
-                Log.d(TAG, url_get);
+                Log.v(TAG, url_get);
                 url_complete = url_http.concat(url_get);
 
-                Log.d(TAG, url_complete);
+                Log.v(TAG, url_complete);
 
                 url = new URL(url_complete);
 
@@ -303,9 +346,9 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
                 con.connect();
 
                 response = con.getResponseCode();
-                Log.d(TAG, "Response code: " + response);
+                Log.v(TAG, "Response code: " + response);
             } catch(Exception e) {
-                Log.d(TAG, e.toString());
+                Log.v(TAG, e.toString());
             }
             return response;
         }
@@ -359,7 +402,7 @@ public class SteadyLightingFragment extends Fragment implements View.OnClickList
             // Starts the query
             conn.connect();
             int response = conn.getResponseCode();
-            Log.d(TAG, "The response is: " + response);
+            Log.v(TAG, "The response is: " + response);
             is = conn.getInputStream();
 
             // Convert the InputStream into a string

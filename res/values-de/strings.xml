@@ -33,4 +33,9 @@
     <string name="pref_title_brightness_url">LED_Blaster Helligkeiten-Datei</string>
     <string name="pref_title_setup_url">LED-Blaster Farben-Datei</string>
     <string name="toast_error_parsing">Ein Fehler ist beim Lesen der LED-Helligkeiten aufgetreten</string>
+    <string name="pref_sum_home_network">WLAN-Netzwerk in dem der led-blaster erreichbar ist (SSID)</string>
+    <string name="pref_title_home_network">Heimnetzwerk</string>
+    <string name="toast_no_led_data">Keine gespeicherten Daten, wird über Netzwerk angefragt...</string>
+    <string name="toast_not_home_network">Keine Verbindung zum Heimnetzwerk, der led-blaster funktioniert vermutlich nicht wie erwartet</string>
+    <string name="toast_updating_leds">Hole neue LED-Informationen vom Netzwerk...</string>
 </resources>

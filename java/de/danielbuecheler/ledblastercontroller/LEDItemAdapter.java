@@ -15,9 +15,16 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -39,11 +46,33 @@ public class LEDItemAdapter  extends BaseAdapter {
 
     private final LayoutInflater inflator;
 
-    public LEDItemAdapter(Context context) {
+    public LEDItemAdapter(Context context)  {
         inflator = LayoutInflater.from(context);
 
         ledItems = new ArrayList<>();
 
+        // try to read file containing led items
+        Log.d(TAG, "reading...");
+
+        try {
+            FileInputStream fis = context.openFileInput("leditem");
+            ObjectInputStream is = new ObjectInputStream(fis);
+            ledItems = (ArrayList<LEDItem>) is.readObject();
+            Log.d(TAG, "read leditems " + ledItems.toString());
+            is.close();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
+
+        Log.d(TAG, String.valueOf(this.getCount()));
+    }
+
+    public void update(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String url_setupfile = prefs.getString("pref_setup_url", "").trim(); // get setup url from sharedPrefs
@@ -53,11 +82,21 @@ public class LEDItemAdapter  extends BaseAdapter {
             // get file from webpage and convert response to string we then can work with
             reply = new DownloadWebpageTask().execute(url_setupfile).get();
         } catch (InterruptedException e) {
-            Log.e(TAG, e.getStackTrace().toString());
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         } catch (ExecutionException e) {
-            Log.e(TAG, e.getStackTrace().toString());
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
 
+        // if no reply
+        if(reply == null || reply.isEmpty()) {
+            // exit
+            return;
+        }
+
+        // delete current LED list
+        ledItems = new ArrayList<>();
 
         // split csv so it's usable for me
         String[] tupels = reply.split("\n");
@@ -67,6 +106,20 @@ public class LEDItemAdapter  extends BaseAdapter {
                 break; // this is only reached when the relevant data has ended (EOF is not possible)
             // add the LED Item
             ledItems.add(new LEDItem(/* short name / code */ data[0], /* long name / label */ data[4], /* hex color */ data[3], /* hex color for font */ data[2]));
+        }
+
+        // save LED Items to file
+        try {
+            Log.d(TAG, "saving...");
+            FileOutputStream fos = new FileOutputStream(new File(context.getFilesDir(), "leditem"));
+
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(ledItems);
+            os.close();
+            fos.close();
+            Log.d(TAG, "saved successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
